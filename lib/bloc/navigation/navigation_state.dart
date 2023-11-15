@@ -4,6 +4,6 @@ class NavigationState {
   String currentPage;
 
   NavigationState({
-    this.currentPage = 'Option',
+    this.currentPage = 'whitePage',
   });
 }

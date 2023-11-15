@@ -54,7 +54,7 @@ class GameService {
   }
 
   playSound(soundname) async {
-    await _player.setAsset('assets/Sounds/${soundname}.mp3');
+    await _player.setAsset('lib/assets/Sounds/${soundname}.mp3');
     _player.play();
   }
 

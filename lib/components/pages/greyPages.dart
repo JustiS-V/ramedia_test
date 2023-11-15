@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+// import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../bloc/navigation/navigation_bloc.dart';
 
 class GreyPage extends StatefulWidget {
-  GreyPage({super.key});
+  const GreyPage({super.key});
 
   @override
   State<GreyPage> createState() => _GreyPageState();
@@ -36,18 +37,17 @@ class _GreyPageState extends State<GreyPage>
         },
       ),
     )
-    ..loadRequest(Uri.parse('https://flutter.dev'));
+    ..loadRequest(Uri.parse('https://youtube.com'));
 
   @override
   Widget build(BuildContext context) {
     return BlocListener <NavigationBloc, NavigationState>(
         listener: (context, state) {},
         child:  Scaffold(
-    appBar: AppBar(title: const Text('Flutter Simple Example')),
-    body: WebViewWidget(
-        controller: controller,
+          body: WebViewWidget(
+            controller: controller,
 
-    ),
-    ));
+          ),
+        ));
   }
 }

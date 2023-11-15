@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
 
 import '../../bloc/navigation/navigation_bloc.dart';
 import '../../constants/colors.dart';
@@ -30,13 +33,34 @@ class _WhitePageState extends State<WhitePage>
   var gameService = GameService();
 
 
+  botCheck () {
+
+  }
+
+  Future<void> fetchLocation() async {
+    final Uri url = Uri.parse('https://ipinfo.io/json');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+
+      Navigator.of(context).pushNamed('/webview');
+
+    } else {
+      print('Failed to fetch location. Status code: ${response.statusCode}');
+    }
+  }
+
+
   @override
   void initState() {
     super.initState();
+    fetchLocation();
     gameService.playSound('riseup');
     controller.forward();
     spinnerController.forward();
   }
+
 
   showPopup(type) {
     double res_height = MediaQuery.of(context).size.height;
@@ -76,7 +100,7 @@ class _WhitePageState extends State<WhitePage>
                     ),
                     Spacer(),
                     Image.asset(
-                      'assets/Graphics/gfx-seven-reel.png',
+                      'lib/assets/Graphics/gfx-seven-reel.png',
                       width: 100,
                     ),
                     Spacer(),
@@ -135,223 +159,224 @@ class _WhitePageState extends State<WhitePage>
     double res_height = MediaQuery.of(context).size.height;
     double res_width = MediaQuery.of(context).size.width;
 
+    // return Container();
     return BlocListener <NavigationBloc, NavigationState>(
-        listener: (context, state) {},
-        child: Scaffold(
+      listener: (context, state) {},
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Container(
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [kprimarycolor, ksecondarycolor])),
+          child: Scaffold(
             backgroundColor: Colors.transparent,
-            body: Container(
-              decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [kprimarycolor, ksecondarycolor])),
-              child: Scaffold(
-                backgroundColor: Colors.transparent,
-                body: ListView(
-                  padding: EdgeInsets.only(left: 15, right: 15),
+            body: ListView(
+              padding: EdgeInsets.only(left: 15, right: 15),
+              children: [
+                SizedBox(
+                  height: res_height * 0.1,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      height: res_height * 0.1,
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          gameService.reset();
+                        });
+                      },
+                      child: const Icon(
+                        Icons.restart_alt_rounded,
+                        color: Colors.white,
+                        size: 40,
+                      ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              gameService.reset();
-                            });
-                          },
-                          child: const Icon(
-                            Icons.restart_alt_rounded,
-                            color: Colors.white,
-                            size: 40,
-                          ),
-                        ),
-                        Image.asset(
-                          'assets/Graphics/gfx-slot-machine.png',
-                          width: res_width * 0.6,
-                        ),
-                        GestureDetector(
-                          onTap: () {},
-                          child: const Icon(
-                            Icons.info_outline,
-                            color: Colors.white,
-                            size: 40,
-                          ),
-                        )
-                      ],
+                    Image.asset(
+                      'lib/assets/Graphics/gfx-slot-machine.png',
+                      width: res_width * 0.6,
                     ),
-                    SizedBox(
-                      height: res_height * 0.02,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          width: 120,
-                          height: 40,
-                          decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.25),
-                              borderRadius:
-                              const BorderRadius.all(Radius.circular(30))),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'YOUR\nCOINS',
-                                textAlign: TextAlign.end,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 10),
-                              ),
-                              SizedBox(
-                                width: 7,
-                              ),
-                              Text(
-                                '${gameService.yourcoins.toString()}',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 25),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          width: 120,
-                          height: 40,
-                          decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.25),
-                              borderRadius:
-                              const BorderRadius.all(Radius.circular(30))),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '${gameService.highscore.toString()}',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 25),
-                              ),
-                              SizedBox(
-                                width: 7,
-                              ),
-                              Text(
-                                'HIGH\nSCORE',
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 10),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: res_height * 0.02,
-                    ),
-                    Column(
-                      children: [
-                        spinnerwidgetbox(
-                          spinnerImage: '${gameService.items[gameService.reels[0]]}',
-                          isSpin: false,
-                          controller: spinnerController,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            spinnerwidgetbox(
-                              spinnerImage:
-                              '${gameService.items[gameService.reels[1]]}',
-                              isSpin: false,
-                              controller: spinnerController,
-                            ),
-                            spinnerwidgetbox(
-                              spinnerImage:
-                              '${gameService.items[gameService.reels[2]]}',
-                              isSpin: false,
-                              controller: spinnerController,
-                            ),
-                          ],
-                        ),
-                        GestureDetector(
-                          onTap: () async {
-                            spinnerController.forward(from: 0);
-                            var spin = gameService.spin();
-                            if (spin == "GAME END") {
-                              showPopup('GAME END');
-                            }
-                            if (spin == "WIN") {
-                              showPopup('WIN');
-                            }
-                            setState(() {});
-                          },
-                          child: spinnerwidgetbox(
-                            spinnerImage: 'gfx-spin.png',
-                            isSpin: true,
-                            controller: spinnerController,
-                          ),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: res_height * 0.02,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            gameService.playSound('casino-chips');
-
-                            setState(() {
-                              gameService.coin10 = true;
-                              controller.forward(from: 0);
-                            });
-                          },
-                          child: CoinChangeWidget(
-                            isTrue: gameService.coin10,
-                            coinValue: '10',
-                          ),
-                        ),
-                        Container(
-                          child: SlideTransition(
-                            position: Tween<Offset>(
-                                begin: Offset(0, 0),
-                                end: Offset(gameService.coin10 ? -2 : 2, 0))
-                                .animate(controller),
-                            child: Image.asset(
-                              'assets/Graphics/gfx-casino-chips.png',
-                              height: 40,
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            gameService.playSound('casino-chips');
-                            setState(() {
-                              gameService.coin10 = false;
-                              controller.forward(from: 0);
-                            });
-                          },
-                          child: CoinChangeWidget(
-                            isTrue: !gameService.coin10,
-                            coinValue: '20',
-                          ),
-                        )
-                      ],
+                    GestureDetector(
+                      onTap: () {},
+                      child: const Icon(
+                        Icons.info_outline,
+                        color: Colors.white,
+                        size: 40,
+                      ),
                     )
                   ],
                 ),
-              ),
+                SizedBox(
+                  height: res_height * 0.02,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: 120,
+                      height: 40,
+                      decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.25),
+                          borderRadius:
+                          const BorderRadius.all(Radius.circular(30))),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'YOUR\nCOINS',
+                            textAlign: TextAlign.end,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10),
+                          ),
+                          SizedBox(
+                            width: 7,
+                          ),
+                          Text(
+                            '${gameService.yourcoins.toString()}',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 25),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      width: 120,
+                      height: 40,
+                      decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.25),
+                          borderRadius:
+                          const BorderRadius.all(Radius.circular(30))),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '${gameService.highscore.toString()}',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 25),
+                          ),
+                          SizedBox(
+                            width: 7,
+                          ),
+                          Text(
+                            'HIGH\nSCORE',
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: res_height * 0.02,
+                ),
+                Column(
+                  children: [
+                    spinnerwidgetbox(
+                      spinnerImage: '${gameService.items[gameService.reels[0]]}',
+                      isSpin: false,
+                      controller: spinnerController,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        spinnerwidgetbox(
+                          spinnerImage:
+                          '${gameService.items[gameService.reels[1]]}',
+                          isSpin: false,
+                          controller: spinnerController,
+                        ),
+                        spinnerwidgetbox(
+                          spinnerImage:
+                          '${gameService.items[gameService.reels[2]]}',
+                          isSpin: false,
+                          controller: spinnerController,
+                        ),
+                      ],
+                    ),
+                    GestureDetector(
+                      onTap: () async {
+                        spinnerController.forward(from: 0);
+                        var spin = gameService.spin();
+                        if (spin == "GAME END") {
+                          showPopup('GAME END');
+                        }
+                        if (spin == "WIN") {
+                          showPopup('WIN');
+                        }
+                        setState(() {});
+                      },
+                      child: spinnerwidgetbox(
+                        spinnerImage: 'gfx-spin.png',
+                        isSpin: true,
+                        controller: spinnerController,
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: res_height * 0.02,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        gameService.playSound('casino-chips');
+
+                        setState(() {
+                          gameService.coin10 = true;
+                          controller.forward(from: 0);
+                        });
+                      },
+                      child: CoinChangeWidget(
+                        isTrue: gameService.coin10,
+                        coinValue: '10',
+                      ),
+                    ),
+                    Container(
+                      child: SlideTransition(
+                        position: Tween<Offset>(
+                            begin: Offset(0, 0),
+                            end: Offset(gameService.coin10 ? -2 : 2, 0))
+                            .animate(controller),
+                        child: Image.asset(
+                          'lib/assets/Graphics/gfx-casino-chips.png',
+                          height: 40,
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        gameService.playSound('casino-chips');
+                        setState(() {
+                          gameService.coin10 = false;
+                          controller.forward(from: 0);
+                        });
+                      },
+                      child: CoinChangeWidget(
+                        isTrue: !gameService.coin10,
+                        coinValue: '20',
+                      ),
+                    )
+                  ],
+                )
+              ],
             ),
+          ),
         ),
+      ),
     );
   }
 }
